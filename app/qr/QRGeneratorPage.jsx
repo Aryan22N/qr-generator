@@ -135,6 +135,8 @@ export default function QRGeneratorPage() {
     img.src = url;
   };
 
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
   const qrValue = clientId ? `${BASE_URL}/client/${clientId}` : "";
 
   /*  UI  */
