@@ -5,16 +5,7 @@ import QRCode from "react-qr-code";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { clientSchema } from "../schemas/client.schema";
-
-/* localStorage helpers */
-const save = (key, value) => localStorage.setItem(key, JSON.stringify(value));
-
-const load = (key) => {
-  const data = localStorage.getItem(key);
-  return data ? JSON.parse(data) : null;
-};
-
-const remove = (key) => localStorage.removeItem(key);
+import { save, load, remove } from "../lib/storage";
 
 /*  Component  */
 export default function QRGeneratorPage() {
@@ -60,14 +51,21 @@ export default function QRGeneratorPage() {
     if (activeId) setClientId(activeId);
   }, [reset]);
 
-  /*  Auto-save draft */
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     const timer = setTimeout(() => {
       save("client_form_draft", formData);
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [formData]);
+  }, [formData, mounted]);
 
   /*  Generate QR */
   const onGenerateQR = (data) => {
@@ -111,7 +109,9 @@ export default function QRGeneratorPage() {
 
   /* Download QR  */
   const downloadQR = () => {
+    if (!qrRef.current) return;
     const svg = qrRef.current.querySelector("svg");
+    if (!svg) return;
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     const img = new Image();
@@ -150,7 +150,7 @@ export default function QRGeneratorPage() {
         {/*  Form*/}
         <div className="bg-white border rounded-xl p-6 space-y-6 shadow">
           <div className="flex justify-between">
-            <h2 className="font-semibol text-gray-800">Client Information</h2>
+            <h2 className="font-semibold text-gray-800">Client Information</h2>
             <button
               onClick={clearForm}
               className="text-sm text-gray-800 border-2-gray-700"
