@@ -252,6 +252,7 @@
 //     </div>
 //   );
 // }
+
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -262,10 +263,15 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { clientSchema } from "../schemas/client.schema";
 import { save, load, remove } from "../lib/storage";
+import { Copy, Check } from "lucide-react";
+
+import { useRouter } from "next/navigation";
 
 export default function QRGeneratorPage() {
   const [clientId, setClientId] = useState(null);
   const qrRef = useRef(null);
+  const [copied, setCopied] = useState(false);
+  const router = useRouter();
 
   const {
     register,
@@ -314,9 +320,21 @@ export default function QRGeneratorPage() {
 
   const onGenerateQR = (data) => {
     const id = crypto.randomUUID();
+    const editKey = crypto.randomUUID();
+
     setClientId(id);
+
     save("active_client_id", id);
-    save(`client_${id}`, { id, ...data, createdAt: new Date().toISOString() });
+    save("active_edit_key", editKey);
+
+    // ✅ IMPORTANT FIX
+    save(`client_${id}`, {
+      id,
+      editKey, // 🔐 store ownership key
+      ...data,
+      createdAt: new Date().toISOString(),
+    });
+
     remove("client_form_draft");
   };
 
@@ -334,6 +352,17 @@ export default function QRGeneratorPage() {
     setClientId(null);
     remove("client_form_draft");
     remove("active_client_id");
+  };
+
+  /*  Copy QR Value  */
+  const copyQrValue = async () => {
+    try {
+      await navigator.clipboard.writeText(qrValue);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (err) {
+      console.error("Copy failed", err);
+    }
   };
 
   const downloadQR = () => {
@@ -365,6 +394,7 @@ export default function QRGeneratorPage() {
   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
   const qrValue = clientId ? `${BASE_URL}/client/${clientId}` : "";
+  const editUrl = `${BASE_URL}/client/${clientId}?editKey=${load("active_edit_key")}`;
 
   return (
     <motion.div
@@ -510,7 +540,22 @@ export default function QRGeneratorPage() {
                   <QRCode value={qrValue} size={180} />
                 </div>
 
-                <p className="text-xs break-all text-gray-800">{qrValue}</p>
+                {/* QR Value + Copy */}
+                <div className="w-full bg-gray-50 border rounded-lg p-3 flex items-center justify-between gap-3">
+                  <p className="text-xs break-all text-gray-800">{qrValue}</p>
+
+                  <button
+                    onClick={copyQrValue}
+                    className="shrink-0 p-2 rounded-md border hover:bg-gray-100 transition"
+                    title="Copy QR ID"
+                  >
+                    {copied ? (
+                      <Check size={16} className="text-green-600" />
+                    ) : (
+                      <Copy size={16} className="text-gray-600" />
+                    )}
+                  </button>
+                </div>
 
                 <button
                   onClick={downloadQR}
@@ -518,6 +563,35 @@ export default function QRGeneratorPage() {
                 >
                   Download QR
                 </button>
+
+                <div className="w-full bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-xs">
+                  <p className="font-medium text-yellow-800">
+                    Owner Edit Link (keep private)
+                  </p>
+                  <p className="break-all text-yellow-700 mt-1">{editUrl}</p>
+                </div>
+
+                <div className="bg-white border rounded-xl p-6 shadow-sm">
+                  <h1 className="text-lg font-semibold text-gray-800">
+                    Change & Update QR Info
+                  </h1>
+
+                  <p className="text-sm text-gray-500 mt-1">
+                    Edit the details linked to this QR code anytime.
+                  </p>
+
+                  <button
+                    onClick={() => router.push(editUrl)}
+                    className="mt-5 inline-flex items-center justify-center
+    bg-blue-600 hover:bg-blue-700
+    text-white text-sm font-medium
+    px-5 py-2.5 rounded-lg
+    transition-all duration-200
+    focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                  >
+                    Add / Update Info
+                  </button>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
