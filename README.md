@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+🔗 Smart Client QR Generator
 
-## Getting Started
+A modern, dynamic QR code generator that creates editable, cloud-backed client profiles.
+Each QR code links to a live URL, allowing client details to be updated without regenerating the QR.
 
-First, run the development server:
+Built using Next.js + Supabase, this project follows real-world QR architecture used in production systems.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+🚀 Live Demo
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+👉 https://qr-generator-lime-ten.vercel.app
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+✨ Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+📇 Dynamic QR Codes
+QR codes point to a URL, not static data.
 
-## Learn More
+✏️ Editable Client Profiles
+Update client info anytime using a private edit link.
 
-To learn more about Next.js, take a look at the following resources:
+🔐 Secure Edit Access (No Login Required)
+Editing is protected via a unique editKey.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+🧩 Custom Fields Support
+Add unlimited custom fields (designation, website, address, etc.).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+🌍 Cross-Device Support
+QR works on mobile, desktop, and any browser.
 
-## Deploy on Vercel
+☁️ Supabase Backend
+Data stored securely in PostgreSQL with Row Level Security (RLS).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+🚀 Production Ready
+Deployed on Vercel, scalable and real-world ready.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+🔑 Security Model
+
+UUID-based client IDs (unguessable)
+
+Secret editKey required for updates
+
+No authentication required
+
+Supabase RLS enabled
+
+App-level ownership validation
+
+🧪 Testing Checklist
+
+✅ Generate QR
+
+✅ Open QR in incognito
+
+✅ Scan QR on mobile
+
+✅ Edit data using private link
+
+✅ Refresh page → data persists
+
+🎯 Use Cases
+
+Digital visiting cards
+
+Business contact sharing
+
+Event profile check-ins
+
+Freelancer portfolios
+
+Product or service info QR
