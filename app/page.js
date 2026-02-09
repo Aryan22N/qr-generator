@@ -1,11 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import QRGeneratorPage from "./qr/QRGeneratorPage";
 import { useAuth } from "@/app/providers";
 import { UserCircle, LogOut, Settings, Home as HomeIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 
 export default function Home() {
   const {
@@ -275,7 +275,18 @@ export default function Home() {
               ease: "easeOut",
             }}
           >
-            <QRGeneratorPage />
+            <Suspense
+              fallback={
+                <div className="w-full flex items-center justify-center py-16">
+                  <div className="text-center space-y-3">
+                    <div className="w-10 h-10 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin mx-auto"></div>
+                    <p className="text-sm text-gray-600">Loading QR tools…</p>
+                  </div>
+                </div>
+              }
+            >
+              <QRGeneratorPage />
+            </Suspense>
           </motion.div>
 
           {/* FEATURES SECTION */}
@@ -379,6 +390,3 @@ export default function Home() {
     </main>
   );
 }
-
-// Add missing import for AnimatePresence
-import { AnimatePresence } from "framer-motion";

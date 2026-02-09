@@ -22,6 +22,46 @@ import { useAuth } from "@/app/providers";
 import { clientSchema } from "../schemas/client.schema";
 import { supabase } from "../lib/supabase";
 
+const generateUUID = () => {
+  if (typeof globalThis !== "undefined" && globalThis.crypto?.randomUUID) {
+    return globalThis.crypto.randomUUID();
+  }
+
+  if (typeof globalThis !== "undefined" && globalThis.crypto?.getRandomValues) {
+    const bytes = globalThis.crypto.getRandomValues(new Uint8Array(16));
+    bytes[6] = (bytes[6] & 0x0f) | 0x40; // version 4
+    bytes[8] = (bytes[8] & 0x3f) | 0x80; // variant 10
+
+    const toHex = (value) => value.toString(16).padStart(2, "0");
+    return [
+      toHex(bytes[0]),
+      toHex(bytes[1]),
+      toHex(bytes[2]),
+      toHex(bytes[3]),
+      "-",
+      toHex(bytes[4]),
+      toHex(bytes[5]),
+      "-",
+      toHex(bytes[6]),
+      toHex(bytes[7]),
+      "-",
+      toHex(bytes[8]),
+      toHex(bytes[9]),
+      "-",
+      toHex(bytes[10]),
+      toHex(bytes[11]),
+      toHex(bytes[12]),
+      toHex(bytes[13]),
+      toHex(bytes[14]),
+      toHex(bytes[15]),
+    ].join("");
+  }
+
+  return `id-${Date.now().toString(36)}-${Math.random()
+    .toString(36)
+    .slice(2, 10)}`;
+};
+
 export default function QRGeneratorPage() {
   const [clientId, setClientId] = useState(null);
   const [copied, setCopied] = useState(false);
@@ -144,7 +184,7 @@ export default function QRGeneratorPage() {
     setErrorMessage("");
     setSuccessMessage("");
 
-    const id = clientIdFromQuery || crypto.randomUUID(); // Use existing ID if loading
+    const id = clientIdFromQuery || generateUUID(); // Use existing ID if loading
 
     try {
       const clientData = {
@@ -260,12 +300,31 @@ export default function QRGeneratorPage() {
   const copyQrValue = async () => {
     if (!qrValue) return;
     try {
-      await navigator.clipboard.writeText(qrValue);
+      if (
+        typeof navigator !== "undefined" &&
+        navigator.clipboard?.writeText &&
+        (typeof window === "undefined" || window.isSecureContext)
+      ) {
+        await navigator.clipboard.writeText(qrValue);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = qrValue;
+        textArea.setAttribute("readonly", "");
+        textArea.style.position = "absolute";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(textArea);
+        if (!ok) {
+          throw new Error("Clipboard copy failed");
+        }
+      }
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch (err) {
       console.error("Failed to copy:", err);
-      setErrorMessage("Failed to copy URL");
+      setErrorMessage("Clipboard not available. Please copy the URL manually.");
     }
   };
 

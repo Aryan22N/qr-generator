@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getClient, updateClient } from "@/app/lib/clientsStore";
+import { getClient, updateClient } from "../../../lib/clientsStore";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
