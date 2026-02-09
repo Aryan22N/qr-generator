@@ -1,302 +1,55 @@
-// "use client";
-
-// import { useEffect, useState } from "react";
-// import { useParams, useSearchParams } from "next/navigation";
-
-// export default function ClientProfilePage() {
-//   const { id } = useParams(); //correct
-//   const searchParams = useSearchParams(); //different variable
-//   const editKeyFromUrl = searchParams.get("editKey");
-
-//   const [client, setClient] = useState(null);
-//   const [loading, setLoading] = useState(true);
-
-//   const [isEditing, setIsEditing] = useState(false);
-//   const [formData, setFormData] = useState(null);
-
-//   useEffect(() => {
-//     let isMounted = true;
-
-//     const loadClient = async () => {
-//       if (!id) {
-//         if (isMounted) setLoading(false);
-//         return;
-//       }
-
-//       try {
-//         let parsed = null;
-
-//         const res = await fetch(`/api/clients/${id}`, { cache: "no-store" });
-//         if (res.ok) {
-//           parsed = await res.json();
-//         }
-
-//         if (!parsed) {
-//           const raw = localStorage.getItem(`client_${id}`);
-//           if (raw) parsed = JSON.parse(raw);
-//         }
-
-//         if (parsed) {
-//           localStorage.setItem(`client_${id}`, JSON.stringify(parsed));
-//         }
-
-//         if (parsed && isMounted) {
-//           setClient(parsed);
-//           setFormData({
-//             name: parsed.name || "",
-//             company: parsed.company || "",
-//             phone: parsed.phone || "",
-//             email: parsed.email || "",
-//             customFields: parsed.customFields || [],
-//           });
-//         }
-//       } catch (err) {
-//         console.error("Failed to load client", err);
-//       } finally {
-//         if (isMounted) setLoading(false);
-//       }
-//     };
-
-//     loadClient();
-
-//     return () => {
-//       isMounted = false;
-//     };
-//   }, [id]);
-
-//   if (loading) {
-//     return (
-//       <div className="min-h-screen flex items-center justify-center text-gray-500">
-//         Loading client details...
-//       </div>
-//     );
-//   }
-
-//   if (!client) {
-//     return (
-//       <div className="min-h-screen flex items-center justify-center text-gray-600">
-//         Client not found
-//       </div>
-//     );
-//   }
-
-//   //  Ownership check AFTER client is loaded
-//   const isOwner = editKeyFromUrl && editKeyFromUrl === client.editKey;
-
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setFormData((prev) => ({ ...prev, [name]: value }));
-//   };
-
-//   const handleCustomFieldChange = (index, key, value) => {
-//     setFormData((prev) => {
-//       const updated = [...prev.customFields];
-//       updated[index] = { ...updated[index], [key]: value };
-//       return { ...prev, customFields: updated };
-//     });
-//   };
-
-//   const addCustomField = () => {
-//     setFormData((prev) => ({
-//       ...prev,
-//       customFields: [...prev.customFields, { label: "", value: "" }],
-//     }));
-//   };
-
-//   const removeCustomField = (index) => {
-//     setFormData((prev) => ({
-//       ...prev,
-//       customFields: prev.customFields.filter((_, i) => i !== index),
-//     }));
-//   };
-
-//   const saveChanges = async () => {
-//     if (!isOwner) return;
-//     if (!editKeyFromUrl) return;
-
-//     try {
-//       const res = await fetch(`/api/clients/${id}`, {
-//         method: "PUT",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({
-//           editKey: editKeyFromUrl,
-//           ...formData,
-//         }),
-//       });
-
-//       if (!res.ok) {
-//         console.error("Failed to update client", res.status);
-//         return;
-//       }
-
-//       const updated = await res.json();
-//       localStorage.setItem(`client_${id}`, JSON.stringify(updated));
-//       setClient(updated);
-//       setIsEditing(false);
-//     } catch (err) {
-//       console.error("Failed to update client", err);
-//     }
-//   };
-
-//   return (
-//     <main className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-//       <div className="bg-white max-w-md w-full rounded-xl shadow-lg p-6 space-y-6">
-//         <h1 className="text-2xl font-bold text-center text-gray-900">
-//           Client Details
-//         </h1>
-
-//         {/* Fixed fields */}
-//         {!isEditing && (
-//           <div className="space-y-3 text-sm text-gray-600">
-//             <Detail label="Name" value={client.name} />
-//             <Detail label="Company" value={client.company} />
-//             <Detail label="Phone" value={client.phone} />
-//             <Detail label="Email" value={client.email} />
-//           </div>
-//         )}
-
-//         {isOwner && isEditing && formData && (
-//           <div className="space-y-4">
-//             {/* Fixed fields */}
-//             <input
-//               name="name"
-//               value={formData.name}
-//               onChange={handleChange}
-//               className="w-full border p-2 rounded"
-//               placeholder="Name"
-//             />
-
-//             <input
-//               name="company"
-//               value={formData.company}
-//               onChange={handleChange}
-//               className="w-full border p-2 rounded"
-//               placeholder="Company"
-//             />
-
-//             <input
-//               name="phone"
-//               value={formData.phone}
-//               onChange={handleChange}
-//               className="w-full border p-2 rounded"
-//               placeholder="Phone"
-//             />
-
-//             <input
-//               name="email"
-//               value={formData.email}
-//               onChange={handleChange}
-//               className="w-full border p-2 rounded"
-//               placeholder="Email"
-//             />
-
-//             {/* Custom fields editor */}
-//             <div className="pt-4 border-t space-y-3">
-//               <p className="text-sm font-medium text-gray-700">Custom Fields</p>
-
-//               {formData.customFields.map((field, index) => (
-//                 <div key={index} className="grid grid-cols-2 gap-2 relative">
-//                   <input
-//                     value={field.label}
-//                     onChange={(e) =>
-//                       handleCustomFieldChange(index, "label", e.target.value)
-//                     }
-//                     placeholder="Label"
-//                     className="border p-2 rounded"
-//                   />
-
-//                   <input
-//                     value={field.value}
-//                     onChange={(e) =>
-//                       handleCustomFieldChange(index, "value", e.target.value)
-//                     }
-//                     placeholder="Value"
-//                     className="border p-2 rounded"
-//                   />
-
-//                   <button
-//                     type="button"
-//                     onClick={() => removeCustomField(index)}
-//                     className="absolute -top-2 -right-2 bg-gray-200 text-gray-600 rounded-full px-2 text-xs"
-//                   >
-//                     ✕
-//                   </button>
-//                 </div>
-//               ))}
-
-//               <button
-//                 type="button"
-//                 onClick={addCustomField}
-//                 className="text-sm bg-gray-200 px-3 py-1 rounded"
-//               >
-//                 + Add Custom Field
-//               </button>
-//             </div>
-
-//             {/* Save */}
-//             <button
-//               onClick={saveChanges}
-//               className="w-full bg-green-600 text-white py-2 rounded"
-//             >
-//               Save Changes
-//             </button>
-//           </div>
-//         )}
-
-//         {/* Custom fields */}
-//         {Array.isArray(client.customFields) &&
-//           client.customFields.length > 0 && (
-//             <div className="space-y-3 text-sm pt-4 border-t">
-//               {client.customFields.map((field, index) => (
-//                 <Detail key={index} label={field.label} value={field.value} />
-//               ))}
-//             </div>
-//           )}
-
-//         {isOwner && !isEditing && (
-//           <button
-//             onClick={() => setIsEditing(true)}
-//             className="w-full bg-blue-600 text-white py-2 rounded mt-4"
-//           >
-//             Edit QR Info
-//           </button>
-//         )}
-
-//         <p className="text-xs text-gray-400 text-center pt-2 break-all">
-//           Client ID: {client.id}
-//         </p>
-//       </div>
-//     </main>
-//   );
-// }
-
-// /* Reusable Detail Row */
-// function Detail({ label, value }) {
-//   return (
-//     <div className="flex justify-between border-b pb-1 gap-4">
-//       <span className="text-gray-500">{label}</span>
-//       <span className="font-medium text-gray-800 text-right break-all">
-//         {value || "—"}
-//       </span>
-//     </div>
-//   );
-// }
-
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
+import { useAuth } from "@/app/providers";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ExternalLink,
+  Smartphone,
+  Instagram,
+  Youtube,
+  Facebook,
+  Twitter,
+  Linkedin,
+  Phone,
+  Mail,
+  MapPin,
+  Link as LinkIcon,
+  Globe,
+  Edit,
+  QrCode,
+} from "lucide-react";
 
 export default function ClientProfilePage() {
   const { id } = useParams();
-  const searchParams = useSearchParams();
-  const editKeyFromUrl = searchParams.get("editKey");
+  const router = useRouter();
+  const { user } = useAuth();
 
   const [client, setClient] = useState(null);
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [error, setError] = useState("");
+
+  /* ===============================
+     DETECT MOBILE DEVICE
+  =============================== */
+  useEffect(() => {
+    // Safely check for mobile
+    const checkMobile = () => {
+      if (typeof window !== "undefined") {
+        setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
+      }
+    };
+
+    checkMobile();
+    if (typeof window !== "undefined") {
+      window.addEventListener("resize", checkMobile);
+      return () => window.removeEventListener("resize", checkMobile);
+    }
+  }, []);
 
   /* ===============================
      LOAD CLIENT FROM SUPABASE
@@ -306,100 +59,503 @@ export default function ClientProfilePage() {
 
     const loadClient = async () => {
       setLoading(true);
+      setError("");
+      try {
+        const { data, error } = await supabase
+          .from("clients")
+          .select("*")
+          .eq("id", id)
+          .single();
 
-      const { data, error } = await supabase
-        .from("clients")
-        .select("*")
-        .eq("id", id)
-        .single();
-
-      if (error || !data) {
-        console.error("Client not found", error);
+        if (error) {
+          console.error("Client not found", error);
+          setError("Client not found");
+          setClient(null);
+        } else if (!data) {
+          setError("Client does not exist");
+          setClient(null);
+        } else {
+          setClient(data);
+          setFormData({
+            name: data.name || "",
+            company: data.company || "",
+            phone: data.phone || "",
+            email: data.email || "",
+            customFields: data.custom_fields || [],
+          });
+        }
+      } catch (err) {
+        console.error("Error loading client:", err);
+        setError("Failed to load client details");
         setClient(null);
-      } else {
-        setClient(data);
-        setFormData({
-          name: data.name || "",
-          company: data.company || "",
-          phone: data.phone || "",
-          email: data.email || "",
-          customFields: data.custom_fields || [],
-        });
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
     loadClient();
   }, [id]);
 
   /* ===============================
-     PERMISSIONS
+     CHECK IF A FIELD SHOULD BE CLICKABLE
   =============================== */
-  const isOwner =
-    Boolean(editKeyFromUrl) && client?.edit_key === editKeyFromUrl;
+
+  // Define which field labels should be clickable
+  const isClickableField = (label) => {
+    if (!label) return false;
+
+    const lowerLabel = label.toLowerCase().trim();
+
+    // NON-clickable fields (prevent false positives)
+    const nonClickableKeywords = [
+      "cgpa",
+      "gpa",
+      "score",
+      "grade",
+      "percentage",
+      "marks",
+      "age",
+      "height",
+      "weight",
+      "temperature",
+      "measurement",
+      "salary",
+      "price",
+      "cost",
+      "amount",
+      "fee",
+      "charge",
+      "rating",
+      "review",
+      "stars",
+      "date",
+      "time",
+      "duration",
+      "schedule",
+      "quantity",
+      "count",
+      "number",
+      "amount",
+      "total",
+      "department",
+      "title",
+      "position",
+      "role",
+      "designation",
+      "notes",
+      "description",
+      "remark",
+      "comment",
+      "feedback",
+      "experience",
+      "years",
+      "level",
+      "seniority",
+    ];
+
+    // First check if it's explicitly non-clickable
+    if (nonClickableKeywords.some((keyword) => lowerLabel.includes(keyword))) {
+      return false;
+    }
+
+    // Only these specific field types should be clickable
+    const clickableKeywords = [
+      // Social media
+      "instagram",
+      "ig",
+      "insta",
+      "facebook",
+      "fb",
+      "twitter",
+      "x",
+      "tweet",
+      "youtube",
+      "yt",
+      "video",
+      "linkedin",
+      "li",
+      "tiktok",
+      "tt",
+      "whatsapp",
+      "wa",
+
+      // Contact info (only when explicitly labeled)
+      "phone",
+      "mobile",
+      "whatsapp",
+      "email",
+      "mail",
+
+      // Websites and links
+      "website",
+      "web",
+      "site",
+      "url",
+      "link",
+      "portfolio",
+      "github",
+      "git",
+
+      // Maps and location
+      "address",
+      "location",
+      "map",
+      "maps",
+
+      // Other specific links
+      "calendar",
+      "booking",
+      "appointment",
+      "menu",
+      "reservation",
+      "donate",
+      "payment",
+      "shop",
+      "store",
+      "buy",
+    ];
+
+    return clickableKeywords.some((keyword) => lowerLabel.includes(keyword));
+  };
 
   /* ===============================
-     FORM HANDLERS
+     URL SCHEME HANDLERS
   =============================== */
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((p) => ({ ...p, [name]: value }));
+
+  // Get icon for different link types
+  const getLinkIcon = (label, value) => {
+    if (!label) return <LinkIcon size={16} />;
+
+    const lowerLabel = label.toLowerCase();
+    const lowerValue = value?.toLowerCase() || "";
+
+    // Check by field label first
+    if (
+      lowerLabel.includes("instagram") ||
+      lowerLabel.includes("ig") ||
+      lowerLabel.includes("insta")
+    ) {
+      return <Instagram size={16} />;
+    }
+    if (lowerLabel.includes("youtube") || lowerLabel.includes("yt")) {
+      return <Youtube size={16} />;
+    }
+    if (lowerLabel.includes("facebook") || lowerLabel.includes("fb")) {
+      return <Facebook size={16} />;
+    }
+    if (lowerLabel.includes("twitter") || lowerLabel.includes("x")) {
+      return <Twitter size={16} />;
+    }
+    if (lowerLabel.includes("linkedin")) {
+      return <Linkedin size={16} />;
+    }
+    if (lowerLabel.includes("phone") || lowerLabel.includes("mobile")) {
+      return <Phone size={16} />;
+    }
+    if (lowerLabel.includes("email") || lowerLabel.includes("mail")) {
+      return <Mail size={16} />;
+    }
+    if (
+      lowerLabel.includes("map") ||
+      lowerLabel.includes("address") ||
+      lowerLabel.includes("location")
+    ) {
+      return <MapPin size={16} />;
+    }
+    if (
+      lowerLabel.includes("website") ||
+      lowerLabel.includes("web") ||
+      lowerLabel.includes("site") ||
+      lowerLabel.includes("url")
+    ) {
+      return <Globe size={16} />;
+    }
+
+    // Fallback: Check by value content
+    if (lowerValue.includes("instagram.com")) return <Instagram size={16} />;
+    if (lowerValue.includes("youtube.com") || lowerValue.includes("youtu.be"))
+      return <Youtube size={16} />;
+    if (lowerValue.includes("facebook.com")) return <Facebook size={16} />;
+    if (lowerValue.includes("twitter.com") || lowerValue.includes("x.com"))
+      return <Twitter size={16} />;
+    if (lowerValue.includes("linkedin.com")) return <Linkedin size={16} />;
+    if (lowerValue.startsWith("tel:")) return <Phone size={16} />;
+    if (lowerValue.startsWith("mailto:")) return <Mail size={16} />;
+    if (lowerValue.includes("maps.") || lowerValue.includes("goo.gl/maps"))
+      return <MapPin size={16} />;
+
+    return <LinkIcon size={16} />;
   };
 
-  const handleCustomFieldChange = (index, key, value) => {
-    setFormData((p) => {
-      const updated = [...p.customFields];
-      updated[index] = { ...updated[index], [key]: value };
-      return { ...p, customFields: updated };
-    });
+  // Format display text for links - FIXED VERSION
+  const formatLinkText = (value) => {
+    if (!value) return "";
+
+    // QUICK FIX: If it's just a number with decimal (like 9.9, 8.5), return as-is
+    if (/^\d*\.?\d+$/.test(value.trim())) {
+      return value;
+    }
+
+    // Remove protocol prefixes
+    if (value.startsWith("tel:")) return value.replace("tel:", "");
+    if (value.startsWith("mailto:")) return value.replace("mailto:", "");
+
+    // Handle social media handles
+    if (value.startsWith("@")) {
+      return value;
+    }
+
+    // Check if it's a URL (starts with http:// or https://)
+    if (value.startsWith("http://") || value.startsWith("https://")) {
+      // Remove protocol and www for display
+      const display = value
+        .replace(/^(https?:\/\/)?(www\.)?/, "")
+        .replace(/\/$/, "")
+        .split("?")[0]; // Remove query parameters
+
+      // Truncate long URLs for display
+      return display.length > 30 ? display.substring(0, 30) + "..." : display;
+    }
+
+    // Return everything else as-is (including plain text like "CGPA 9.9")
+    return value;
   };
 
-  const addCustomField = () => {
-    setFormData((p) => ({
-      ...p,
-      customFields: [...p.customFields, { label: "", value: "" }],
-    }));
-  };
+  // Handle link clicks with app-specific URL schemes - FIXED VERSION
+  const handleLinkClick = (label, value) => {
+    if (!value || typeof window === "undefined") return;
 
-  const removeCustomField = (index) => {
-    setFormData((p) => ({
-      ...p,
-      customFields: p.customFields.filter((_, i) => i !== index),
-    }));
-  };
+    const lowerLabel = label?.toLowerCase() || "";
+    const lowerValue = value.toLowerCase().trim();
+    let appUrl = value;
 
-  /* ===============================
-     SAVE CHANGES (SUPABASE)
-  =============================== */
-  const saveChanges = async () => {
-    if (!isOwner) return;
-
-    const { error } = await supabase
-      .from("clients")
-      .update({
-        name: formData.name,
-        company: formData.company,
-        phone: formData.phone,
-        email: formData.email,
-        custom_fields: formData.customFields,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", id)
-      .eq("edit_key", editKeyFromUrl);
-
-    if (error) {
-      console.error("Update failed", error);
+    // Check if this is just a number with decimal (like 9.9) - don't make it clickable
+    const isJustNumber = /^\d*\.?\d+$/.test(value.trim());
+    if (isJustNumber) {
+      // Don't open anything for plain numbers
       return;
     }
 
-    setClient((c) => ({
-      ...c,
-      ...formData,
-      custom_fields: formData.customFields,
-    }));
+    // Handle phone numbers (only if field is explicitly phone/mobile/whatsapp)
+    if (
+      (lowerLabel.includes("phone") ||
+        lowerLabel.includes("mobile") ||
+        lowerLabel.includes("whatsapp")) &&
+      /^[\d\s\-\+\(\)]{10,}$/.test(lowerValue.replace(/[^\d\s\-\+\(\)]/g, ""))
+    ) {
+      appUrl = `tel:${value.replace(/[^\d\+]/g, "")}`;
+    }
+    // Handle emails (only if field is explicitly email/mail)
+    else if (
+      (lowerLabel.includes("email") || lowerLabel.includes("mail")) &&
+      lowerValue.includes("@") &&
+      lowerValue.includes(".")
+    ) {
+      appUrl = `mailto:${value}`;
+    }
+    // Handle Instagram links
+    else if (
+      lowerLabel.includes("instagram") ||
+      lowerLabel.includes("ig") ||
+      lowerLabel.includes("insta")
+    ) {
+      const username = extractInstagramUsername(lowerValue);
+      if (isMobile && username) {
+        appUrl = `instagram://user?username=${username}`;
+        // Fallback to web if app not installed
+        setTimeout(() => {
+          safeOpenURL(`https://instagram.com/${username}`, "_blank");
+        }, 500);
+      } else if (username) {
+        appUrl = `https://instagram.com/${username}`;
+      }
+    }
+    // Handle YouTube links
+    else if (lowerLabel.includes("youtube") || lowerLabel.includes("yt")) {
+      const videoId = extractYouTubeId(lowerValue);
+      const channelId = extractYouTubeChannel(lowerValue);
 
-    setIsEditing(false);
+      if (isMobile) {
+        if (videoId) {
+          appUrl = `vnd.youtube://watch?v=${videoId}`;
+        } else if (channelId) {
+          appUrl = `vnd.youtube://channel/${channelId}`;
+        }
+        // Fallback to web
+        setTimeout(() => {
+          safeOpenURL(
+            value.startsWith("http") ? value : `https://${value}`,
+            "_blank",
+          );
+        }, 500);
+      }
+    }
+    // Handle Facebook links
+    else if (lowerLabel.includes("facebook") || lowerLabel.includes("fb")) {
+      const username = extractUsername(lowerValue, "facebook.com");
+      if (isMobile && username) {
+        appUrl = `fb://profile/${username}`;
+        setTimeout(() => {
+          safeOpenURL(`https://facebook.com/${username}`, "_blank");
+        }, 500);
+      }
+    }
+    // Handle Twitter/X links
+    else if (lowerLabel.includes("twitter") || lowerLabel.includes("x")) {
+      const username = extractTwitterUsername(lowerValue);
+      if (isMobile && username) {
+        appUrl = `twitter://user?screen_name=${username}`;
+        setTimeout(() => {
+          safeOpenURL(`https://twitter.com/${username}`, "_blank");
+        }, 500);
+      }
+    }
+    // Handle LinkedIn links
+    else if (lowerLabel.includes("linkedin")) {
+      const profileId = extractLinkedInId(lowerValue);
+      if (isMobile && profileId) {
+        appUrl = `linkedin://profile/${profileId}`;
+        setTimeout(() => {
+          safeOpenURL(
+            value.startsWith("http") ? value : `https://${value}`,
+            "_blank",
+          );
+        }, 500);
+      }
+    }
+    // Handle website/URL links
+    else if (
+      lowerLabel.includes("website") ||
+      lowerLabel.includes("web") ||
+      lowerLabel.includes("site") ||
+      lowerLabel.includes("url")
+    ) {
+      // Check if it looks like a real URL (not just a number with dot)
+      const looksLikeRealURL =
+        !isJustNumber &&
+        (value.includes(".com") ||
+          value.includes(".org") ||
+          value.includes(".net") ||
+          value.includes(".io") ||
+          value.includes(".co") ||
+          value.includes("/"));
+
+      // Add https:// if missing AND it looks like a real URL
+      if (
+        !value.startsWith("http") &&
+        !value.startsWith("tel:") &&
+        !value.startsWith("mailto:") &&
+        looksLikeRealURL
+      ) {
+        appUrl = `https://${value}`;
+      }
+    }
+    // For other clickable fields, be more careful about adding https://
+    else {
+      // Check if it looks like a real URL (not just a number with dot)
+      const looksLikeRealURL =
+        !isJustNumber &&
+        (value.includes(".com") ||
+          value.includes(".org") ||
+          value.includes(".net") ||
+          value.includes(".io") ||
+          value.includes(".co") ||
+          value.includes("/"));
+
+      // Only add https:// if it looks like a real URL
+      if (
+        !value.startsWith("http") &&
+        !value.startsWith("tel:") &&
+        !value.startsWith("mailto:") &&
+        looksLikeRealURL
+      ) {
+        appUrl = `https://${value}`;
+      }
+    }
+
+    // Only open if we have a valid URL (not the original value unless it's already a URL)
+    if (appUrl && (appUrl !== value || value.startsWith("http"))) {
+      safeOpenURL(appUrl, isMobile ? "_self" : "_blank");
+    }
+  };
+
+  // Safe URL opener with error handling
+  const safeOpenURL = (url, target = "_blank") => {
+    if (typeof window === "undefined") return;
+
+    try {
+      const newWindow = window.open(url, target);
+      if (
+        !newWindow ||
+        newWindow.closed ||
+        typeof newWindow.closed === "undefined"
+      ) {
+        // Popup blocked, fallback to same window
+        window.location.href = url;
+      }
+    } catch (err) {
+      console.error("Error opening URL:", err);
+      // Last resort fallback
+      window.location.href = url;
+    }
+  };
+
+  /* ===============================
+     HELPER FUNCTIONS
+  =============================== */
+
+  const extractInstagramUsername = (url) => {
+    if (!url) return null;
+    // Handle @username format
+    if (url.startsWith("@")) {
+      return url.substring(1);
+    }
+
+    // Handle instagram.com/username
+    const regex = /instagram\.com\/([^/?&]+)/;
+    const match = url.match(regex);
+    return match ? match[1].split("?")[0] : null;
+  };
+
+  const extractTwitterUsername = (url) => {
+    if (!url) return null;
+    // Handle @username format
+    if (url.startsWith("@")) {
+      return url.substring(1);
+    }
+
+    // Handle twitter.com/username or x.com/username
+    const regex = /(?:twitter\.com|x\.com)\/([^/?&]+)/;
+    const match = url.match(regex);
+    return match ? match[1].split("?")[0] : null;
+  };
+
+  const extractUsername = (url, domain) => {
+    if (!url) return null;
+    const regex = new RegExp(`${domain}/([^/?&]+)`);
+    const match = url.match(regex);
+    return match ? match[1].split("?")[0] : null;
+  };
+
+  const extractYouTubeId = (url) => {
+    if (!url) return null;
+    const regex = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s?]+)/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  };
+
+  const extractYouTubeChannel = (url) => {
+    if (!url) return null;
+    const regex = /youtube\.com\/channel\/([^/?&]+)/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  };
+
+  const extractLinkedInId = (url) => {
+    if (!url) return null;
+    const regex = /linkedin\.com\/in\/([^/?&]+)/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
   };
 
   /* ===============================
@@ -408,148 +564,191 @@ export default function ClientProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-gray-600">
-        Loading client details...
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p>Loading client details...</p>
+        </div>
       </div>
     );
   }
 
-  if (!client) {
+  if (error || !client) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-600">
-        Client not found
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center space-y-6">
+          <h2 className="text-2xl font-bold text-gray-800">Client Not Found</h2>
+          <p className="text-gray-600">
+            {error || "The client does not exist or has been removed."}
+          </p>
+          <button
+            onClick={() => router.push("/")}
+            className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition-colors"
+          >
+            Go Home
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen text-gray-600 bg-gray-100 flex items-center justify-center px-4">
-      <div className="bg-white max-w-md w-full rounded-xl shadow-lg p-6 space-y-6">
-        <h1 className="text-2xl  font-bold text-center">Client Details</h1>
-
-        {/* VIEW MODE */}
-        {!isEditing && (
-          <div className="space-y-3 text-sm">
-            <Detail label="Name" value={client.name} />
-            <Detail label="Company" value={client.company} />
-            <Detail label="Phone" value={client.phone} />
-            <Detail label="Email" value={client.email} />
-
-            {Array.isArray(client.custom_fields) &&
-              client.custom_fields.map((f, i) => (
-                <Detail key={i} label={f.label} value={f.value} />
-              ))}
-          </div>
-        )}
-
-        {/* EDIT MODE */}
-        {isOwner && isEditing && formData && (
-          <div className="space-y-4">
-            <input
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full border p-2 rounded"
-              placeholder="Name"
-            />
-
-            <input
-              name="company"
-              value={formData.company}
-              onChange={handleChange}
-              className="w-full border p-2 rounded"
-              placeholder="Company"
-            />
-
-            <input
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              className="w-full border p-2 rounded"
-              placeholder="Phone"
-            />
-
-            <input
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full border p-2 rounded"
-              placeholder="Email"
-            />
-
-            {/* Custom Fields */}
-            <div className="border-t pt-4 space-y-3">
-              <p className="text-sm font-medium">Custom Fields</p>
-
-              {formData.customFields.map((field, i) => (
-                <div key={i} className="grid grid-cols-2 gap-2 relative">
-                  <input
-                    value={field.label}
-                    onChange={(e) =>
-                      handleCustomFieldChange(i, "label", e.target.value)
-                    }
-                    className="border p-2 rounded"
-                    placeholder="Label"
-                  />
-                  <input
-                    value={field.value}
-                    onChange={(e) =>
-                      handleCustomFieldChange(i, "value", e.target.value)
-                    }
-                    className="border p-2 rounded"
-                    placeholder="Value"
-                  />
-
-                  <button
-                    onClick={() => removeCustomField(i)}
-                    className="absolute -top-2 -right-2 bg-gray-200 text-xs px-2 rounded-full"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-
-              <button
-                onClick={addCustomField}
-                className="text-sm bg-gray-200 px-3 py-1 rounded"
-              >
-                + Add Custom Field
-              </button>
+    <main className="min-h-screen text-gray-600 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4 py-8">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-white max-w-xl w-full rounded-2xl shadow-xl p-6 space-y-6"
+      >
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-800">Client Details</h1>
+          {isMobile && (
+            <div className="inline-flex items-center gap-1 mt-1 px-3 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
+              <Smartphone size={12} />
+              <span>Tap links to open in apps</span>
             </div>
+          )}
+        </div>
 
-            <button
-              onClick={saveChanges}
-              className="w-full bg-green-600 text-white py-2 rounded"
-            >
-              Save Changes
-            </button>
+        {/* CLIENT INFORMATION */}
+        <div className="space-y-4">
+          <div className="bg-gray-50 rounded-xl p-4">
+            <h2 className="text-sm font-medium text-gray-500 mb-2">
+              Basic Information
+            </h2>
+            <div className="space-y-3">
+              {/* Name - NOT clickable */}
+              <DetailItem label="Name" value={client.name} />
+
+              {/* Company - NOT clickable */}
+              <DetailItem label="Company" value={client.company} />
+
+              {/* Phone - NOT clickable (only clickable if custom field labeled "Phone") */}
+              {client.phone && (
+                <DetailItem label="Phone" value={client.phone} />
+              )}
+
+              {/* Email - NOT clickable (only clickable if custom field labeled "Email") */}
+              {client.email && (
+                <DetailItem label="Email" value={client.email} />
+              )}
+            </div>
           </div>
-        )}
 
-        {isOwner && !isEditing && (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="w-full bg-blue-600 text-white py-2 rounded"
-          >
-            Edit QR Info
-          </button>
-        )}
+          {/* CUSTOM FIELDS - Only specific fields are clickable */}
+          <AnimatePresence>
+            {Array.isArray(client.custom_fields) &&
+              client.custom_fields.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-gray-50 rounded-xl p-4"
+                >
+                  <h2 className="text-sm font-medium text-gray-500 mb-2">
+                    Additional Information
+                  </h2>
+                  <div className="space-y-3">
+                    {client.custom_fields.map((field, i) => {
+                      const shouldBeClickable = isClickableField(field.label);
 
-        <p className="text-xs text-gray-400 text-center break-all">
+                      return shouldBeClickable ? (
+                        <ClickableDetail
+                          key={i}
+                          label={field.label}
+                          value={formatLinkText(field.value)}
+                          onClick={() =>
+                            handleLinkClick(field.label, field.value)
+                          }
+                          icon={getLinkIcon(field.label, field.value)}
+                          isLink={true}
+                        />
+                      ) : (
+                        <DetailItem
+                          key={i}
+                          label={field.label}
+                          value={field.value}
+                        />
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+          </AnimatePresence>
+
+          {/* ACTION BUTTONS (Only visible to owner) */}
+          <AnimatePresence>
+            {user?.id === client.owner_id && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-3 pt-4"
+              >
+                <button
+                  onClick={() => router.push(`/client/${client.id}/edit`)}
+                  className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                >
+                  <Edit size={18} />
+                  Edit Client Info
+                </button>
+
+                {/* QR Code Link */}
+                <button
+                  onClick={() =>
+                    router.push(`/qrgenerator?client=${client.id}`)
+                  }
+                  className="w-full border border-gray-300 text-gray-700 py-3 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                >
+                  <QrCode size={18} />
+                  View QR Code
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <p className="text-xs text-gray-400 text-center break-all pt-4 border-t">
           Client ID: {client.id}
         </p>
-      </div>
+      </motion.div>
     </main>
   );
 }
 
 /* ===============================
-   REUSABLE DETAIL ROW
+   REUSABLE COMPONENTS
 =============================== */
-function Detail({ label, value }) {
+
+// For non-clickable items
+function DetailItem({ label, value }) {
   return (
-    <div className="flex justify-between border-b pb-1 gap-4">
-      <span className="text-gray-500">{label}</span>
-      <span className="font-medium text-right break-all">{value || "—"}</span>
+    <div className="flex justify-between items-start">
+      <span className="text-gray-500 text-sm">{label}</span>
+      <span className="font-medium text-gray-800 text-right break-all max-w-[60%]">
+        {value || "—"}
+      </span>
+    </div>
+  );
+}
+
+// For clickable links
+function ClickableDetail({ label, value, onClick, icon, isLink = false }) {
+  return (
+    <div
+      onClick={onClick}
+      className={`flex justify-between items-center p-3 rounded-lg cursor-pointer transition-all ${
+        isLink
+          ? "bg-white border border-blue-100 hover:border-blue-300 hover:bg-blue-50"
+          : ""
+      }`}
+    >
+      <div className="flex items-center gap-2">
+        {icon && <span className="text-blue-600">{icon}</span>}
+        <span className="text-gray-500 text-sm">{label}</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="font-medium text-blue-600 text-right break-all max-w-[60%]">
+          {value || "—"}
+        </span>
+        {isLink && <ExternalLink size={14} className="text-gray-400" />}
+      </div>
     </div>
   );
 }
