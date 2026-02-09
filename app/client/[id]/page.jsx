@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
-import { useAuth } from "../../lib/auth";
+import { useAuth } from "@/app/providers";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ExternalLink,

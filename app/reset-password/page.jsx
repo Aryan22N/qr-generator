@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "../lib/supabase";
 import { motion } from "framer-motion";
 import { Lock, Check, Loader2 } from "lucide-react";
 
