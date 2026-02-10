@@ -177,8 +177,8 @@ const Navbar = () => {
                       {/* Menu Items */}
                       <div className="p-2 space-y-1">
                         {[
-                          // { name: "Dashboard", icon: HomeIcon, path: "/" },
-                          // { name: "My Clients", icon: UserCircle, path: "/client" },
+                          { name: "Dashboard", icon: HomeIcon, path: "/", mobileOnly: true },
+                          { name: "My Clients", icon: UserCircle, path: "/client", mobileOnly: true },
                           { name: "Profile Settings", icon: Settings, path: "/settings" },
                         ].map((item) => (
                           <button
@@ -187,7 +187,8 @@ const Navbar = () => {
                               setIsDropdownOpen(false);
                               router.push(item.path);
                             }}
-                            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 rounded-xl hover:bg-blue-50 hover:text-blue-700 transition-all group"
+                            className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 rounded-xl hover:bg-blue-50 hover:text-blue-700 transition-all group ${item.mobileOnly ? "md:hidden" : ""
+                              }`}
                           >
                             <div className="p-2 bg-gray-100 rounded-lg group-hover:bg-blue-100/50 transition-colors">
                               <item.icon size={18} className="text-gray-500 group-hover:text-blue-600" />
