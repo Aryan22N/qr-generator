@@ -15,8 +15,10 @@ import {
   RefreshCw,
   Loader2,
   Eye,
+  ArrowRight,
+  Save,
 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation"; // Add useSearchParams
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/app/providers";
 
 import { clientSchema } from "../schemas/client.schema";
@@ -68,10 +70,10 @@ export default function QRGeneratorPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [loadingClient, setLoadingClient] = useState(false); // Add loading state
+  const [loadingClient, setLoadingClient] = useState(false);
   const qrRef = useRef(null);
   const router = useRouter();
-  const searchParams = useSearchParams(); // Add this
+  const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAuth();
 
   // Get client ID from query parameter
@@ -390,10 +392,10 @@ export default function QRGeneratorPage() {
   =============================== */
   if (authLoading || loadingClient) {
     return (
-      <div className="flex justify-center text-gary-600 items-center min-h-screen">
+      <div className="flex justify-center text-primary items-center min-h-[50vh]">
         <div className="text-center space-y-4">
-          <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin mx-auto"></div>
-          <p className="text-gray-600">
+          <Loader2 className="w-12 h-12 animate-spin mx-auto text-primary" />
+          <p className="text-muted-foreground">
             {loadingClient
               ? "Loading client data..."
               : "Loading authentication..."}
@@ -410,13 +412,13 @@ export default function QRGeneratorPage() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-6xl mx-auto p-4 text-gray-600 md:p-8 space-y-8"
+      className="max-w-6xl mx-auto p-4 md:p-8 space-y-8"
     >
       <div className="text-center">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground">
           {clientIdFromQuery ? "Update Client QR" : "Client QR Code Generator"}
         </h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-muted-foreground mt-2">
           {clientIdFromQuery
             ? "Update client information and regenerate QR code"
             : "Create QR codes for client profiles"}
@@ -430,9 +432,9 @@ export default function QRGeneratorPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="p-4 bg-green-50 border border-green-200 rounded-xl"
+            className="p-4 bg-green-500/15 border border-green-500/30 rounded-xl"
           >
-            <p className="text-green-600 text-sm">{successMessage}</p>
+            <p className="text-green-600 dark:text-green-400 text-sm">{successMessage}</p>
           </motion.div>
         )}
 
@@ -441,9 +443,9 @@ export default function QRGeneratorPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="p-4 bg-red-50 border border-red-200 rounded-xl"
+            className="p-4 bg-destructive/15 border border-destructive/30 rounded-xl"
           >
-            <p className="text-red-600 text-sm">{errorMessage}</p>
+            <p className="text-destructive text-sm">{errorMessage}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -453,14 +455,14 @@ export default function QRGeneratorPage() {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="bg-white border border-gray-200 rounded-2xl p-6 space-y-6 shadow-sm"
+          className="bg-card border border-border rounded-2xl p-6 space-y-6 shadow-sm"
         >
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-gray-800">
+              <h2 className="text-xl font-semibold text-card-foreground">
                 Client Information
               </h2>
-              <p className="text-gray-500 text-sm mt-1">
+              <p className="text-muted-foreground text-sm mt-1">
                 {clientIdFromQuery
                   ? "Update client details"
                   : "Enter client details to generate QR code"}
@@ -470,7 +472,7 @@ export default function QRGeneratorPage() {
               {clientId && (
                 <button
                   onClick={() => router.push(`/client/${clientId}`)}
-                  className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800"
+                  className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
                   title="View Client Profile"
                 >
                   <Eye size={16} />
@@ -479,7 +481,7 @@ export default function QRGeneratorPage() {
               )}
               <button
                 onClick={clearForm}
-                className="flex items-center gap-2 text-sm text-red-600 hover:text-red-800 disabled:text-gray-400"
+                className="flex items-center gap-2 text-sm text-destructive hover:text-destructive/80 disabled:opacity-50 transition-colors"
                 disabled={isSubmitting}
                 type="button"
               >
@@ -493,20 +495,20 @@ export default function QRGeneratorPage() {
           <div className="space-y-4">
             {["name", "company", "email", "phone"].map((field) => (
               <div key={field} className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700 capitalize">
+                <label className="block text-sm font-medium text-foreground capitalize">
                   {field}
                   {field === "name" && (
-                    <span className="text-red-500 ml-1">*</span>
+                    <span className="text-destructive ml-1">*</span>
                   )}
                 </label>
                 <input
                   {...register(field)}
                   placeholder={`Enter client ${field}`}
-                  className={`w-full border ${errors[field] ? "border-red-300" : "border-gray-300"} rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:bg-gray-100`}
+                  className={`w-full bg-muted/50 border ${errors[field] ? "border-destructive focus:ring-destructive/30" : "border-input focus:ring-primary/30"} rounded-xl px-4 py-3 focus:ring-2 focus:border-transparent transition-all disabled:opacity-50 outline-none`}
                   disabled={isSubmitting}
                 />
                 {errors[field] && (
-                  <p className="text-xs text-red-600 mt-1">
+                  <p className="text-xs text-destructive mt-1">
                     {errors[field].message}
                   </p>
                 )}
@@ -515,20 +517,20 @@ export default function QRGeneratorPage() {
           </div>
 
           {/* CUSTOM FIELDS */}
-          <div className="border-t pt-6">
+          <div className="border-t border-border pt-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-lg font-medium text-gray-800">
+                <h3 className="text-lg font-medium text-card-foreground">
                   Custom Fields
                 </h3>
-                <p className="text-gray-500 text-sm">
+                <p className="text-muted-foreground text-sm">
                   Add additional information
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => append({ label: "", value: "" })}
-                className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 disabled:text-gray-400"
+                className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 disabled:opacity-50"
                 disabled={isSubmitting}
               >
                 <Plus size={16} />
@@ -537,55 +539,58 @@ export default function QRGeneratorPage() {
             </div>
 
             <div className="space-y-4">
-              {fields.map((field, index) => (
-                <motion.div
-                  key={field.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-4 bg-gray-50 rounded-xl space-y-3"
-                >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Field Label
-                      </label>
-                      <input
-                        {...register(`customFields.${index}.label`)}
-                        placeholder="e.g., Department, Instagram, Website"
-                        className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                        disabled={isSubmitting}
-                      />
+              <AnimatePresence>
+                {fields.map((field, index) => (
+                  <motion.div
+                    key={field.id}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="p-4 bg-muted/30 rounded-xl space-y-3 overflow-hidden"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Field Label
+                        </label>
+                        <input
+                          {...register(`customFields.${index}.label`)}
+                          placeholder="e.g., Department"
+                          className="w-full bg-background border border-input rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary/30 focus:border-transparent disabled:opacity-50 outline-none"
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Value
+                        </label>
+                        <input
+                          {...register(`customFields.${index}.value`)}
+                          placeholder="Enter value"
+                          className="w-full bg-background border border-input rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary/30 focus:border-transparent disabled:opacity-50 outline-none"
+                          disabled={isSubmitting}
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Value
-                      </label>
-                      <input
-                        {...register(`customFields.${index}.value`)}
-                        placeholder="Enter value"
-                        className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => remove(index)}
+                        className="flex items-center gap-1 text-sm text-destructive hover:text-destructive/80 disabled:opacity-50"
                         disabled={isSubmitting}
-                      />
+                      >
+                        <Trash2 size={14} />
+                        Remove
+                      </button>
                     </div>
-                  </div>
-                  <div className="flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => remove(index)}
-                      className="flex items-center gap-1 text-sm text-red-500 hover:text-red-700 disabled:text-gray-400"
-                      disabled={isSubmitting}
-                    >
-                      <Trash2 size={14} />
-                      Remove
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
 
               {fields.length === 0 && (
-                <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-xl">
-                  <p className="text-gray-500">No custom fields added</p>
-                  <p className="text-gray-400 text-sm mt-1">
+                <div className="text-center py-8 border-2 border-dashed border-border rounded-xl">
+                  <p className="text-muted-foreground">No custom fields added</p>
+                  <p className="text-muted-foreground/60 text-sm mt-1">
                     Add fields like social media links, addresses, etc.
                   </p>
                 </div>
@@ -594,37 +599,46 @@ export default function QRGeneratorPage() {
           </div>
 
           {/* SUBMIT BUTTON */}
-          <div className="pt-6 border-t">
+          <div className="pt-6 border-t border-border">
             {!clientId ? (
               <button
                 onClick={handleSubmit(onGenerateQR)}
                 disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                className="w-full bg-primary text-primary-foreground py-4 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 font-medium shadow-lg shadow-primary/20"
               >
                 {isSubmitting ? (
                   <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <Loader2 className="w-5 h-5 animate-spin" />
                     {clientIdFromQuery ? "Updating..." : "Generating..."}
                   </>
                 ) : clientIdFromQuery ? (
-                  "Update & Regenerate QR"
+                  <>
+                    <RefreshCw size={20} />
+                    Update & Regenerate QR
+                  </>
                 ) : (
-                  "Generate QR Code"
+                  <>
+                    <Check size={20} />
+                    Generate QR Code
+                  </>
                 )}
               </button>
             ) : (
               <button
                 onClick={handleSubmit(onSaveChanges)}
                 disabled={isSubmitting || !isDirty}
-                className="w-full bg-gradient-to-r from-gray-700 to-gray-800 text-white py-4 rounded-xl hover:from-gray-800 hover:to-gray-900 transition-all disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                className="w-full bg-secondary text-secondary-foreground py-4 rounded-xl hover:bg-secondary/80 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 font-medium border border-input"
               >
                 {isSubmitting ? (
                   <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <Loader2 className="w-5 h-5 animate-spin" />
                     Saving...
                   </>
                 ) : (
-                  "Save Changes"
+                  <>
+                    <Save size={20} />
+                    Save Changes
+                  </>
                 )}
               </button>
             )}
@@ -636,34 +650,34 @@ export default function QRGeneratorPage() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm"
+          className="bg-card border border-border rounded-2xl p-6 shadow-sm"
         >
           <div className="h-full flex flex-col">
             <div className="mb-6">
-              <h2 className="text-xl font-semibold text-gray-800">QR Code</h2>
-              <p className="text-gray-500 text-sm mt-1">
+              <h2 className="text-xl font-semibold text-card-foreground">QR Code</h2>
+              <p className="text-muted-foreground text-sm mt-1">
                 Scan this code to view client profile
               </p>
             </div>
 
             {!clientId ? (
               <div className="flex-1 flex flex-col items-center justify-center text-center py-12">
-                <div className="w-24 h-24 bg-gray-100 rounded-2xl flex items-center justify-center mb-6">
-                  <div className="w-16 h-16 border-4 border-gray-300 border-dashed rounded-lg"></div>
+                <div className="w-24 h-24 bg-muted rounded-2xl flex items-center justify-center mb-6">
+                  <div className="w-16 h-16 border-4 border-input border-dashed rounded-lg opacity-50"></div>
                 </div>
-                <h3 className="text-lg font-medium text-gray-700 mb-2">
+                <h3 className="text-lg font-medium text-foreground mb-2">
                   {clientIdFromQuery
                     ? "Loading client..."
                     : "No QR Code Generated"}
                 </h3>
-                <p className="text-gray-500 max-w-md">
+                <p className="text-muted-foreground max-w-md">
                   {clientIdFromQuery
                     ? "Loading client data..."
                     : "Fill out the client information form and click 'Generate QR Code' to create a shareable QR code."}
                 </p>
                 {loadingClient && (
                   <div className="mt-4">
-                    <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
                   </div>
                 )}
               </div>
@@ -672,7 +686,7 @@ export default function QRGeneratorPage() {
                 <div className="flex-1 flex flex-col items-center justify-center space-y-8">
                   <div
                     ref={qrRef}
-                    className="p-6 bg-white border-2 border-gray-100 rounded-2xl shadow-inner"
+                    className="p-6 bg-white border-2 border-border rounded-2xl shadow-inner"
                   >
                     <QRCode
                       value={qrValue}
@@ -685,17 +699,17 @@ export default function QRGeneratorPage() {
 
                   {/* QR URL WITH COPY */}
                   <div className="w-full space-y-4">
-                    <div className="bg-gray-50 rounded-xl p-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <div className="bg-muted/50 rounded-xl p-4 border border-border">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Client Profile URL
                       </label>
                       <div className="flex items-center gap-2">
-                        <p className="text-sm break-all flex-1 font-mono text-gray-600">
+                        <p className="text-sm break-all flex-1 font-mono text-muted-foreground">
                           {qrValue}
                         </p>
                         <button
                           onClick={copyQrValue}
-                          className="flex-shrink-0 p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="flex-shrink-0 p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
                           title="Copy URL"
                           type="button"
                         >
@@ -717,7 +731,7 @@ export default function QRGeneratorPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <button
                         onClick={downloadQR}
-                        className="flex items-center justify-center gap-2 bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition-colors"
+                        className="flex items-center justify-center gap-2 bg-secondary text-secondary-foreground border border-input py-3 rounded-xl hover:bg-secondary/80 transition-colors font-medium"
                         type="button"
                       >
                         <Download size={18} />
@@ -725,7 +739,7 @@ export default function QRGeneratorPage() {
                       </button>
                       <button
                         onClick={() => router.push(`/client/${clientId}/edit`)}
-                        className="flex items-center justify-center gap-2 bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition-colors"
+                        className="flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 rounded-xl hover:opacity-90 transition-colors font-medium shadow-md shadow-primary/20"
                         type="button"
                       >
                         <Edit2 size={18} />
@@ -733,14 +747,14 @@ export default function QRGeneratorPage() {
                       </button>
                     </div>
 
-                    <div className="pt-4 border-t">
+                    <div className="pt-4 border-t border-border">
                       <button
                         onClick={() => router.push(`/client/${clientId}`)}
-                        className="w-full text-gray-600 hover:text-gray-800 py-2 text-sm flex items-center justify-center gap-2"
+                        className="w-full text-muted-foreground hover:text-foreground py-2 text-sm flex items-center justify-center gap-2 transition-colors"
                         type="button"
                       >
                         <Eye size={16} />
-                        View Client Profile →
+                        View Client Profile <ArrowRight size={16} />
                       </button>
                     </div>
                   </div>
