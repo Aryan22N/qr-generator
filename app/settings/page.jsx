@@ -177,17 +177,6 @@ export default function SettingsPage() {
                       </div>
                     )}
                   </div>
-
-                  <label className="absolute bottom-2 right-2 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-700 transition-colors shadow-lg">
-                    <Camera size={20} className="text-white" />
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleAvatarUpload}
-                      className="hidden"
-                      disabled={loading}
-                    />
-                  </label>
                 </div>
 
                 <h2 className="text-xl font-semibold text-gray-900">

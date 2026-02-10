@@ -15,15 +15,15 @@ export const AuthProvider = ({ children }) => {
     const checkUser = async () => {
       try {
         const {
-          data: { user },
+          data: { session },
           error,
-        } = await supabase.auth.getUser();
+        } = await supabase.auth.getSession();
 
         if (error) {
-          console.error("Error getting user:", error);
+          console.error("Error getting session:", error);
           setError(error.message);
         } else {
-          setUser(user);
+          setUser(session?.user ?? null);
         }
       } catch (err) {
         console.error("Unexpected error:", err);
@@ -40,7 +40,11 @@ export const AuthProvider = ({ children }) => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       try {
-        if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        if (
+          event === "SIGNED_IN" ||
+          event === "TOKEN_REFRESHED" ||
+          event === "INITIAL_SESSION"
+        ) {
           setUser(session?.user ?? null);
           setError(null);
         } else if (event === "SIGNED_OUT") {
@@ -48,10 +52,14 @@ export const AuthProvider = ({ children }) => {
           setError(null);
         } else if (event === "USER_UPDATED") {
           // Refresh user data if updated
-          const {
-            data: { user },
-          } = await supabase.auth.getUser();
-          setUser(user);
+          if (session?.user) {
+            setUser(session.user);
+          } else {
+            const {
+              data: { user },
+            } = await supabase.auth.getUser();
+            setUser(user);
+          }
         }
       } catch (err) {
         console.error("Auth state change error:", err);
