@@ -1,7 +1,15 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/app/providers";
-import { UserCircle, LogOut, Settings, Home as HomeIcon, ArrowRight, QrCode } from "lucide-react";
+import {
+  UserCircle,
+  LogOut,
+  Settings,
+  Home as HomeIcon,
+  ArrowRight,
+  IdCard,
+  QrCode,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -94,6 +102,7 @@ const Navbar = () => {
               {[
                 { name: "Dashboard", icon: HomeIcon, path: "/" },
                 { name: "Clients", icon: UserCircle, path: "/client" },
+                { name: "Business Card", icon: IdCard, path: "/Cardtemp" },
               ].map((item) => (
                 <Link key={item.path} href={item.path}>
                   <span className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50/50 rounded-lg transition-all duration-200">
@@ -104,7 +113,6 @@ const Navbar = () => {
               ))}
             </div>
           )}
-
 
           {/* USER AVATAR & DROPDOWN */}
           <div className="flex items-center gap-4">
@@ -121,7 +129,9 @@ const Navbar = () => {
                     <p className="text-sm font-semibold text-gray-900">
                       {getUserDisplayName()}
                     </p>
-                    <p className="text-xs text-gray-500 font-medium">{userEmail}</p>
+                    <p className="text-xs text-gray-500 font-medium">
+                      {userEmail}
+                    </p>
                   </div>
 
                   {/* Avatar */}
@@ -141,16 +151,30 @@ const Navbar = () => {
                     )}
                     <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
                   </div>
-
                 </motion.button>
 
                 {/* Dropdown Menu */}
                 <AnimatePresence>
                   {isDropdownOpen && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95, filter: "blur(10px)" }}
-                      animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95, filter: "blur(10px)" }}
+                      initial={{
+                        opacity: 0,
+                        y: 10,
+                        scale: 0.95,
+                        filter: "blur(10px)",
+                      }}
+                      animate={{
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        filter: "blur(0px)",
+                      }}
+                      exit={{
+                        opacity: 0,
+                        y: 10,
+                        scale: 0.95,
+                        filter: "blur(10px)",
+                      }}
                       transition={{ duration: 0.2 }}
                       className="absolute right-0 mt-4 w-72 bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 overflow-hidden z-50 ring-1 ring-black/5"
                     >
@@ -177,9 +201,23 @@ const Navbar = () => {
                       {/* Menu Items */}
                       <div className="p-2 space-y-1">
                         {[
-                          { name: "Dashboard", icon: HomeIcon, path: "/", mobileOnly: true },
-                          { name: "My Clients", icon: UserCircle, path: "/client", mobileOnly: true },
-                          { name: "Profile Settings", icon: Settings, path: "/settings" },
+                          {
+                            name: "Dashboard",
+                            icon: HomeIcon,
+                            path: "/",
+                            mobileOnly: true,
+                          },
+                          {
+                            name: "My Clients",
+                            icon: UserCircle,
+                            path: "/client",
+                            mobileOnly: true,
+                          },
+                          {
+                            name: "Profile Settings",
+                            icon: Settings,
+                            path: "/settings",
+                          },
                         ].map((item) => (
                           <button
                             key={item.path}
@@ -187,11 +225,15 @@ const Navbar = () => {
                               setIsDropdownOpen(false);
                               router.push(item.path);
                             }}
-                            className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 rounded-xl hover:bg-blue-50 hover:text-blue-700 transition-all group ${item.mobileOnly ? "md:hidden" : ""
-                              }`}
+                            className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 rounded-xl hover:bg-blue-50 hover:text-blue-700 transition-all group ${
+                              item.mobileOnly ? "md:hidden" : ""
+                            }`}
                           >
                             <div className="p-2 bg-gray-100 rounded-lg group-hover:bg-blue-100/50 transition-colors">
-                              <item.icon size={18} className="text-gray-500 group-hover:text-blue-600" />
+                              <item.icon
+                                size={18}
+                                className="text-gray-500 group-hover:text-blue-600"
+                              />
                             </div>
                             {item.name}
                           </button>
@@ -204,7 +246,10 @@ const Navbar = () => {
                           onClick={handleLogout}
                           className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-xl transition-all font-medium text-sm group"
                         >
-                          <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" />
+                          <LogOut
+                            size={18}
+                            className="group-hover:-translate-x-1 transition-transform"
+                          />
                           Sign Out
                         </button>
                       </div>
@@ -221,7 +266,8 @@ const Navbar = () => {
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <span className="relative flex items-center gap-2">
-                  Sign In <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  Sign In{" "}
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
               </motion.button>
             )}

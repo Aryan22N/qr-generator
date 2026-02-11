@@ -12,7 +12,7 @@ import {
   BarChart3,
   Zap,
   Globe,
-  Building
+  Building,
 } from "lucide-react";
 import Hero3D from "./components/Hero3D";
 
@@ -42,7 +42,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white text-gray-900 flex flex-col font-sans selection:bg-blue-100 selection:text-blue-900">
-
       {/* ==========================================
           HERO SECTION
       ========================================== */}
@@ -89,8 +88,9 @@ export default function Home() {
               className="max-w-2xl mx-auto text-xl text-gray-600 leading-relaxed font-medium"
               variants={itemVariants}
             >
-              Generate permanent QR codes for your clients. Edit their contact info,
-              links, or custom profiles instantly without ever reprinting the code.
+              Generate permanent QR codes for your clients. Edit their contact
+              info, links, or custom profiles instantly without ever reprinting
+              the code.
             </motion.p>
 
             <motion.div
@@ -109,11 +109,14 @@ export default function Home() {
                     : user
                       ? "Generate QR"
                       : "Start for Free"}
-                  {!authLoading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
+                  {!authLoading && (
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  )}
                 </span>
               </button>
 
-              <button className="px-8 py-4 bg-white text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all border border-gray-200 shadow-sm hover:shadow-md"
+              <button
+                className="px-8 py-4 bg-white text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all border border-gray-200 shadow-sm hover:shadow-md"
                 onClick={() => router.push("/client")}
               >
                 View Dashboard
@@ -185,12 +188,23 @@ export default function Home() {
                 color: "bg-purple-600",
               },
             ].map((item, i) => (
-              <div key={i} className="relative z-10 flex flex-col items-center text-center">
-                <div className={`w-24 h-24 ${item.color} rounded-3xl rotate-3 shadow-xl flex items-center justify-center mb-8 transform hover:rotate-6 transition-transform duration-300`}>
-                  <span className="text-3xl font-bold text-white font-mono">{item.step}</span>
+              <div
+                key={i}
+                className="relative z-10 flex flex-col items-center text-center"
+              >
+                <div
+                  className={`w-24 h-24 ${item.color} rounded-3xl rotate-3 shadow-xl flex items-center justify-center mb-8 transform hover:rotate-6 transition-transform duration-300`}
+                >
+                  <span className="text-3xl font-bold text-white font-mono">
+                    {item.step}
+                  </span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
-                <p className="text-gray-600 leading-relaxed px-4">{item.desc}</p>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">
+                  {item.title}
+                </h3>
+                <p className="text-gray-600 leading-relaxed px-4">
+                  {item.desc}
+                </p>
               </div>
             ))}
           </div>
@@ -231,7 +245,9 @@ export default function Home() {
                 whileHover={{ y: -5 }}
                 className="bg-white p-8 rounded-3xl border border-gray-100 shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-gray-200/80 transition-all duration-300"
               >
-                <div className={`w-14 h-14 ${feature.bg} rounded-2xl flex items-center justify-center mb-6`}>
+                <div
+                  className={`w-14 h-14 ${feature.bg} rounded-2xl flex items-center justify-center mb-6`}
+                >
                   <feature.icon className={`w-7 h-7 ${feature.color}`} />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3">
@@ -245,22 +261,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-
-
-
-      {/* Footer */}
-      <footer className="border-t border-gray-100 py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <div className="flex justify-center items-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">QR</div>
-            <span className="text-xl font-bold text-gray-900">QR Generator</span>
-          </div>
-          <p className="text-gray-500 font-medium">
-            © {new Date().getFullYear()} QR Generator System. All rights reserved.
-          </p>
-        </div>
-      </footer>
     </main>
   );
 }
