@@ -220,7 +220,9 @@ export default function LoginPage() {
                   exit={{ opacity: 0 }}
                   className="mb-6 p-4 bg-green-500/15 border border-green-500/30 rounded-xl"
                 >
-                  <p className="text-green-600 dark:text-green-400 text-sm">{successMessage}</p>
+                  <p className="text-green-600 dark:text-green-400 text-sm">
+                    {successMessage}
+                  </p>
                 </motion.div>
               )}
 
@@ -266,7 +268,9 @@ export default function LoginPage() {
                     />
                   </div>
                   {errors.email && (
-                    <p className="text-xs text-destructive mt-2">{errors.email}</p>
+                    <p className="text-xs text-destructive mt-2">
+                      {errors.email}
+                    </p>
                   )}
                 </div>
 
@@ -327,7 +331,9 @@ export default function LoginPage() {
                     />
                   </div>
                   {errors.email && (
-                    <p className="text-xs text-destructive mt-2">{errors.email}</p>
+                    <p className="text-xs text-destructive mt-2">
+                      {errors.email}
+                    </p>
                   )}
                 </div>
 
@@ -364,7 +370,11 @@ export default function LoginPage() {
                         className="text-muted-foreground hover:text-foreground transition-colors p-1"
                         tabIndex={-1}
                       >
-                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        {showPassword ? (
+                          <EyeOff size={20} />
+                        ) : (
+                          <Eye size={20} />
+                        )}
                       </button>
                     </div>
                   </div>
@@ -469,14 +479,13 @@ export default function LoginPage() {
               </motion.form>
             )}
 
-            {/* DEMO INFO */}
-            {!isSignUp && !showResetPassword && (
+            {/* {!isSignUp && !showResetPassword && (
               <div className="mt-8 p-4 bg-muted/50 rounded-xl border border-border/50">
                 <p className="text-sm text-muted-foreground text-center">
                   <strong>Demo Account:</strong> demo@example.com / demodemo
                 </p>
               </div>
-            )}
+            )} */}
           </div>
         </div>
 

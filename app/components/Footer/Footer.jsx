@@ -55,7 +55,7 @@ const Footer = () => {
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity"></div>
               <div className="relative bg-white p-3 rounded-2xl shadow-xl">
                 <Image
-                  src="/footerimg.png"
+                  src="/QR-Generator.png"
                   alt="Footer image"
                   width={280}
                   height={200}

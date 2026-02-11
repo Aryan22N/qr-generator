@@ -115,12 +115,15 @@ export default function Home() {
                 </span>
               </button>
 
-              <button
-                className="px-8 py-4 bg-white text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all border border-gray-200 shadow-sm hover:shadow-md"
-                onClick={() => router.push("/client")}
-              >
-                View Dashboard
-              </button>
+              {user && (
+                <button
+                  className="px-8 py-4 bg-white text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all border border-gray-200 shadow-sm hover:shadow-md"
+                  disabled={authLoading}
+                  onClick={() => router.push("/client")}
+                >
+                  View Dashboard
+                </button>
+              )}
             </motion.div>
           </motion.div>
         </div>
