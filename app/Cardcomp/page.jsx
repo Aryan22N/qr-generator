@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore, useRef } from "react";
+import { Suspense, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Card1 from "../components/BusCard1/Card1";
 
@@ -56,7 +56,7 @@ const getTemplateSnapshot = (templateIdParam) => {
   return template ? JSON.stringify(template) : "";
 };
 
-export default function CardCompPage() {
+function CardCompClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const templateIdParam = searchParams?.get?.("template");
@@ -1056,6 +1056,20 @@ export default function CardCompPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CardCompPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center text-slate-600">
+          Loading card editor...
+        </div>
+      }
+    >
+      <CardCompClient />
+    </Suspense>
   );
 }
 
