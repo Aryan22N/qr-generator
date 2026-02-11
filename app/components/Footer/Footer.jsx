@@ -17,8 +17,8 @@ const Footer = () => {
               </span>
             </div>
             <p className="text-slate-600 leading-relaxed">
-              Create professional QR codes and stunning business cards in seconds.
-              Elevate your brand identity with our premium tools.
+              Create professional QR codes and stunning business cards in
+              seconds. Elevate your brand identity with our premium tools.
             </p>
             <div className="flex gap-4 pt-2">
               <SocialLink href="#" icon="twitter" />
@@ -50,8 +50,6 @@ const Footer = () => {
             </ul>
           </div>
 
-
-
           <div className="flex items-center justify-center">
             <div className="relative animate-float">
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity"></div>
@@ -66,7 +64,6 @@ const Footer = () => {
               </div>
             </div>
           </div>
-
         </div>
 
         <div className="border-t border-slate-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
