@@ -61,7 +61,7 @@ export default function CardCompPage() {
   const searchParams = useSearchParams();
   const templateIdParam = searchParams?.get?.("template");
   const templateSnapshot = useSyncExternalStore(
-    () => () => {},
+    () => () => { },
     () => getTemplateSnapshot(templateIdParam),
     () => "",
   );
@@ -127,7 +127,7 @@ export default function CardCompPage() {
 
   const applyCaptureOverrides = () => {
     if (!cardRef.current || typeof window === "undefined") {
-      return () => {};
+      return () => { };
     }
 
     const root = cardRef.current;
@@ -458,9 +458,8 @@ export default function CardCompPage() {
         .toISOString()
         .slice(0, 19)
         .replace(/[:]/g, "-");
-      const filename = `${formData.company || "BusinessCard"}_${
-        formData.name || "Card"
-      }_${timestamp}.png`
+      const filename = `${formData.company || "BusinessCard"}_${formData.name || "Card"
+        }_${timestamp}.png`
         .replace(/\s+/g, "_")
         .toLowerCase()
         .replace(/[^a-z0-9_.-]/g, "");

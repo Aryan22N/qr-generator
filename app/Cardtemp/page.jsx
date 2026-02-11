@@ -222,17 +222,17 @@ const TemplatePreview = ({ template, onClick }) => {
 
   return (
     <div
-      className="group bg-white rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-blue-300 transition-all duration-300 cursor-pointer overflow-hidden hover:-translate-y-1"
+      className="group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-slate-200 hover:border-blue-400 transition-all duration-300 cursor-pointer overflow-hidden transform hover:-translate-y-2"
       onClick={() => onClick(template)}
     >
       {/* Card Image Preview */}
-      <div className="relative h-64 overflow-hidden bg-gradient-to-br from-slate-50 to-white">
+      <div className="relative h-64 overflow-hidden bg-slate-100">
         {/* Actual Card Image */}
         <div className="relative w-full h-full">
           <img
             src={cardImage}
             alt={`${template.name} business card design`}
-            className="w-full h-full object-contain p-4 transform group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-contain p-6 transform group-hover:scale-105 transition-transform duration-500"
             onError={(e) => {
               // Fallback to a placeholder image if the actual image fails to load
               e.target.src = `/images/cards/placeholder-card.jpg`;
@@ -241,25 +241,17 @@ const TemplatePreview = ({ template, onClick }) => {
 
           {/* Design Elements Overlay */}
           <div
-            className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center shadow-sm"
-            style={{ backgroundColor: template.color }}
+            className="absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm bg-white/90"
+            style={{ color: template.color }}
           >
-            <div className="text-white text-sm font-bold">
-              {template.icon || "💎"}
-            </div>
+            <div className="text-lg font-bold">{template.icon || "💎"}</div>
           </div>
-
-          {/* Color Indicator */}
-          <div
-            className="absolute bottom-4 left-4 w-6 h-6 rounded-full border-2 border-white shadow-sm"
-            style={{ backgroundColor: template.color }}
-          />
         </div>
 
         {/* Overlay with CTA */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end p-6">
-          <div className="w-full">
-            <button className="w-full px-4 py-3 bg-white text-blue-600 font-bold rounded-lg shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end p-6 backdrop-blur-[2px]">
+          <div className="w-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+            <button className="w-full px-4 py-3 bg-white text-slate-900 font-bold rounded-xl shadow-lg hover:bg-blue-50 transition-colors">
               Use This Design
             </button>
           </div>
@@ -268,55 +260,54 @@ const TemplatePreview = ({ template, onClick }) => {
         {/* Featured Badge */}
         {template.featured && (
           <div className="absolute top-4 left-4">
-            <span className="px-3 py-1 text-xs font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full shadow-sm">
+            <span className="px-3 py-1 text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full shadow-lg">
               Popular
             </span>
           </div>
         )}
-
-        {/* Hover Effect Overlay */}
-        <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
       {/* Template Info */}
       <div className="p-6">
         <div className="flex items-start justify-between mb-3">
           <div>
-            <h3 className="text-lg font-bold text-slate-900">
+            <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
               {template.name}
             </h3>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-700">
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 border border-slate-200">
                 {template.category}
               </span>
               {template.design && (
-                <span className="text-xs font-medium px-2 py-1 rounded-full bg-blue-50 text-blue-700">
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 border border-blue-100">
                   {template.design}
                 </span>
               )}
             </div>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-lg border border-yellow-100">
             <Star size={14} className="text-yellow-500 fill-yellow-500" />
-            <span className="text-sm font-medium">{template.rating}</span>
+            <span className="text-sm font-bold text-slate-700">
+              {template.rating}
+            </span>
           </div>
         </div>
 
-        <p className="text-sm text-slate-600 mb-4 line-clamp-2">
+        <p className="text-sm text-slate-500 mb-5 line-clamp-2 leading-relaxed">
           {template.description}
         </p>
 
         <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-          <div className="flex items-center gap-3 text-sm text-slate-500">
-            <div className="flex items-center gap-1">
-              <TrendingUp size={12} />
-              <span>{template.downloads} downloads</span>
-            </div>
+          <div className="flex items-center gap-2 text-sm text-slate-500 font-medium">
+            <TrendingUp size={14} className="text-emerald-500" />
+            <span>{template.downloads} saved</span>
           </div>
 
-          <button className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1">
-            Quick preview
-            <span className="text-lg">→</span>
+          <button className="text-sm font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 group/btn">
+            Preview
+            <span className="group-hover/btn:translate-x-0.5 transition-transform">
+              →
+            </span>
           </button>
         </div>
       </div>
@@ -365,64 +356,66 @@ export default function CardTemplatesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-8">
-      <div className="max-w-7xl mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-slate-900 mb-3">
-            Choose Your Card Design
+    <div className="min-h-screen bg-slate-50">
+      {/* Hero Section */}
+      <div className="bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 py-16 md:py-24 text-center">
+          <h1 className="text-5xl md:text-6xl font-extrabold text-slate-900 mb-6 tracking-tight">
+            Design Your <span className="text-blue-600">Identity</span>
           </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Click on any card design below to start customizing with your
-            information
+          <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+            Choose from our collection of premium, professionally designed
+            templates to start building your brand today.
           </p>
         </div>
+      </div>
 
+      <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Search and Controls */}
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <div className="relative flex-1 max-w-md">
-              <Search
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"
-                size={20}
-              />
-              <input
-                type="text"
-                placeholder="Search designs..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2 rounded-lg ${
-                    viewMode === "grid"
-                      ? "bg-blue-100 text-blue-600"
-                      : "bg-white text-slate-600 hover:bg-slate-100"
-                  }`}
-                >
-                  <Grid size={20} />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-2 rounded-lg ${
-                    viewMode === "list"
-                      ? "bg-blue-100 text-blue-600"
-                      : "bg-white text-slate-600 hover:bg-slate-100"
-                  }`}
-                >
-                  <List size={20} />
-                </button>
+        <div className="mb-12">
+          <div className="bg-white rounded-2xl p-4 shadow-lg border border-slate-100 mb-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="relative flex-1">
+                <Search
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"
+                  size={22}
+                />
+                <input
+                  type="text"
+                  placeholder="Search designs like 'Corporate', 'Minimal'..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+                />
               </div>
 
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
-                <Filter size={16} />
-                Filter
-              </button>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+                  <button
+                    onClick={() => setViewMode("grid")}
+                    className={`p-2.5 rounded-lg transition-all ${viewMode === "grid"
+                        ? "bg-white text-blue-600 shadow-sm"
+                        : "text-slate-500 hover:text-slate-700"
+                      }`}
+                  >
+                    <Grid size={20} />
+                  </button>
+                  <button
+                    onClick={() => setViewMode("list")}
+                    className={`p-2.5 rounded-lg transition-all ${viewMode === "list"
+                        ? "bg-white text-blue-600 shadow-sm"
+                        : "text-slate-500 hover:text-slate-700"
+                      }`}
+                  >
+                    <List size={20} />
+                  </button>
+                </div>
+
+                <button className="px-5 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors flex items-center gap-2 shadow-lg shadow-slate-900/20">
+                  <Filter size={18} />
+                  Filters
+                </button>
+              </div>
             </div>
           </div>
 
@@ -435,47 +428,53 @@ export default function CardTemplatesPage() {
         </div>
 
         {/* Results Count */}
-        <div className="mb-6 flex items-center justify-between">
-          <p className="text-slate-600">
+        <div className="mb-8 flex items-center justify-between">
+          <p className="text-slate-600 font-medium">
             Showing{" "}
-            <span className="font-semibold">{filteredTemplates.length}</span>{" "}
-            card designs
+            <span className="text-slate-900 font-bold">
+              {filteredTemplates.length}
+            </span>{" "}
+            premium designs
           </p>
-          <div className="flex items-center gap-2 text-sm text-slate-500">
+          <div className="flex items-center gap-2 text-sm text-slate-500 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm">
             <Clock size={14} />
-            <span>Click any card to start editing</span>
+            <span>Updated weekly</span>
           </div>
         </div>
 
         {/* Selected Template Preview (Large) */}
         {selectedTemplate && (
-          <div className="mb-12 bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900">
-                  Preview: {selectedTemplate.name}
-                </h2>
-                <p className="text-slate-600">{selectedTemplate.description}</p>
-              </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setSelectedTemplate(null)}
-                  className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200"
-                >
-                  Close Preview
-                </button>
-                <button
-                  onClick={() => handleTemplateSelect(selectedTemplate)}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
-                >
-                  Use This Design →
-                </button>
+          <div className="mb-12 bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden ring-4 ring-slate-50">
+            <div className="p-8 md:p-10 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                  <h2 className="text-3xl font-bold text-slate-900 mb-2">
+                    Preview: {selectedTemplate.name}
+                  </h2>
+                  <p className="text-slate-600 text-lg">
+                    {selectedTemplate.description}
+                  </p>
+                </div>
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => setSelectedTemplate(null)}
+                    className="px-6 py-3 bg-white text-slate-700 rounded-xl font-bold border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm"
+                  >
+                    Close Preview
+                  </button>
+                  <button
+                    onClick={() => handleTemplateSelect(selectedTemplate)}
+                    className="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/30 flex items-center gap-2"
+                  >
+                    Use This Design <span className="text-xl">→</span>
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Full Card Preview */}
-            <div className="flex justify-center">
-              <div className="scale-90">
+            <div className="p-12 bg-slate-100/50 flex justify-center overflow-x-auto">
+              <div className="scale-90 transform-gpu hover:scale-100 transition-transform duration-500">
                 <Card1
                   formData={selectedTemplate.previewData}
                   template={selectedTemplate}
@@ -490,7 +489,7 @@ export default function CardTemplatesPage() {
           <div
             className={
               viewMode === "grid"
-                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8"
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
                 : "space-y-6"
             }
           >
@@ -503,23 +502,23 @@ export default function CardTemplatesPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
-              <Search size={32} className="text-slate-400" />
+          <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-300">
+            <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-slate-50 flex items-center justify-center">
+              <Search size={40} className="text-slate-300" />
             </div>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">
+            <h3 className="text-xl font-bold text-slate-900 mb-2">
               No designs found
             </h3>
-            <p className="text-slate-600 max-w-md mx-auto">
-              Try adjusting your search or filter to find what you&apos;re
-              looking for.
+            <p className="text-slate-500 max-w-md mx-auto mb-8">
+              We couldn&apos;t find any templates matching your search. Try
+              adjusting your filters to find what you&apos;re looking for.
             </p>
             <button
               onClick={() => {
                 setSearchQuery("");
                 setActiveCategory("all");
               }}
-              className="mt-4 px-4 py-2 text-blue-600 hover:text-blue-700 font-medium"
+              className="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors"
             >
               Clear all filters
             </button>
@@ -527,18 +526,24 @@ export default function CardTemplatesPage() {
         )}
 
         {/* Call to Action */}
-        <div className="mt-12 text-center">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 max-w-3xl mx-auto">
-            <h3 className="text-2xl font-bold text-slate-900 mb-3">
-              Need a custom design?
-            </h3>
-            <p className="text-slate-600 mb-6">
-              Our design team can create a unique business card just for your
-              brand.
-            </p>
-            <button className="px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 border border-blue-200 transition-colors">
-              Request Custom Design
-            </button>
+        <div className="mt-20">
+          <div className="bg-gradient-to-br from-slate-900 to-indigo-900 rounded-3xl p-12 text-center text-white relative overflow-hidden shadow-2xl">
+            {/* Abstract Background Shapes */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+
+            <div className="relative z-10">
+              <h3 className="text-3xl md:text-4xl font-bold mb-4">
+                Need a custom enterprise design?
+              </h3>
+              <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
+                Our tailored solutions help large organizations maintain brand
+                consistency across thousands of employees.
+              </p>
+              <button className="px-8 py-4 bg-white text-slate-900 font-bold rounded-xl hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                Contact Enterprise Sales
+              </button>
+            </div>
           </div>
         </div>
       </div>
